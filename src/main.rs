@@ -1,5 +1,6 @@
 use actix_files::NamedFile;
-use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer, Result};
+use actix_web::{middleware::Logger, web, App, HttpRequest, HttpResponse, HttpServer, Result};
+use env_logger::Env;
 use std::path::PathBuf;
 
 async fn index() -> Result<NamedFile> {
@@ -9,10 +10,16 @@ async fn index() -> Result<NamedFile> {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| App::new().route("/", web::get().to(index)))
-        .bind("0.0.0.0:8080")?
-        .run()
-        .await
+    env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
+
+    HttpServer::new(|| {
+        App::new()
+            .wrap(Logger::default())
+            .route("/", web::get().to(index))
+    })
+    .bind("0.0.0.0:8080")?
+    .run()
+    .await
 }
 
 // For testing
