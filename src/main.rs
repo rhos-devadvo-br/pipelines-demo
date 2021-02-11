@@ -3,11 +3,11 @@ use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer, Result};
 use std::path::PathBuf;
 
 async fn index() -> Result<NamedFile> {
-    let path: PathBuf = PathBuf::from("./public/inxex.html");
+    let path: PathBuf = PathBuf::from("./public/index.html");
     Ok(NamedFile::open(path)?)
 }
 
-#[actix_rt::main]
+#[actix_web::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| App::new().route("/", web::get().to(index)))
         .bind("0.0.0.0:8080")?
